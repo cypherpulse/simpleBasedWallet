@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 15% 6%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 12% 10%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 12% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 220 70% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 220 80% 70%;
+
+    --secondary: 240 10% 16%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 5% 55%;
+
+    --accent: 220 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    --border: 240 10% 20%;
+    --input: 240 10% 18%;
+    --ring: 220 70% 60%;
+
+    --radius: 1rem;
+
+    /* Wallet-specific tokens */
+    --wallet-gradient: linear-gradient(135deg, hsl(220 70% 60% / 0.2), hsl(220 80% 50% / 0.1));
+    --glass-bg: hsl(240 12% 10% / 0.8);
+    --glass-border: hsl(0 0% 100% / 0.1);
+    --glow-blue: 0 0 40px hsl(220 80% 50% / 0.2);
+
+    --sidebar-background: 240 15% 6%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 220 70% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 10% 16%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 10% 20%;
+    --sidebar-ring: 220 70% 60%;
+  }
+
+  .dark {
+    --background: 240 15% 6%;
+    --foreground: 0 0% 98%;
+    --card: 240 12% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 12% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 220 70% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 10% 16%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 220 60% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 20%;
+    --input: 240 10% 18%;
+    --ring: 220 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  code, .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply relative overflow-hidden rounded-2xl;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--wallet-gradient);
+    pointer-events: none;
+  }
+
+  .glow-effect {
+    box-shadow: var(--glow-blue), var(--glow-blue);
+  }
+
+  .eth-gradient {
+    background: linear-gradient(135deg, hsl(220 70% 60%), hsl(220 80% 55%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .btn-glow {
+    @apply relative overflow-hidden transition-all duration-300;
+    box-shadow: 0 0 20px hsl(220 70% 60% / 0.3);
+  }
+
+  .btn-glow:hover {
+    box-shadow: 0 0 40px hsl(220 70% 60% / 0.5);
+    transform: translateY(-2px);
+  }
+
+  .input-glow:focus {
+    box-shadow: 0 0 0 2px hsl(220 70% 60% / 0.3);
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(220 70% 60% / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(220 70% 60% / 0.5);
+    }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(240 12% 10%) 0%,
+      hsl(240 12% 15%) 50%,
+      hsl(240 12% 10%) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
