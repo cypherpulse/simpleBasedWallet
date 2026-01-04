@@ -100,6 +100,16 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "bounce-in": {
+          "0%": { opacity: "0", transform: "scale(0.3)" },
+          "50%": { opacity: "1", transform: "scale(1.05)" },
+          "70%": { transform: "scale(0.9)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -107,6 +117,8 @@ export default {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "slide-in": "slide-in 0.3s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
+        "bounce-in": "bounce-in 0.8s ease-out forwards",
+        "shimmer": "shimmer 2s infinite",
       },
       boxShadow: {
         'glow': '0 0 60px hsl(220 70% 60% / 0.3), 0 0 40px hsl(220 80% 50% / 0.2)',
