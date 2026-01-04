@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Check, Wallet, ExternalLink, Send, Shield, RefreshCw } from 'lucide-react';
+import { Copy, Check, Wallet, ExternalLink, Send, Shield, RefreshCw, History, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -19,7 +19,7 @@ export function WalletDashboard() {
   const [sendAmount, setSendAmount] = useState('');
 
   // Fetch contract balance
-  const { data: balanceData, refetch: refetchBalance } = useBalance({
+  const { data: balanceData, refetch: refetchBalance, isLoading: isBalanceLoading } = useBalance({
     address: WALLET_CONTRACT_ADDRESS,
   });
 
@@ -104,7 +104,7 @@ export function WalletDashboard() {
           href={`${BASESCAN_URL}/tx/${hash}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline"
+          className="underline hover:text-primary transition-colors"
         >
           View on BaseScan
         </a>
@@ -126,54 +126,103 @@ export function WalletDashboard() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Wallet className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold eth-gradient">MyBaseWallet</h1>
+            <div>
+              <h1 className="text-xl font-bold eth-gradient">MyBaseWallet</h1>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                <span>Base Sepolia Testnet</span>
+              </div>
+            </div>
           </div>
           <ConnectKitButton />
         </header>
 
-        <div className="glass-card p-6 space-y-4 animate-fade-in">
+        <div className="glass-card p-6 space-y-4 animate-fade-in hover:shadow-2xl hover:bg-white/15 transition-all duration-300">
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Send className="w-4 h-4" /><span>Receive ETH</span></div>
-          <div className="flex justify-center"><div className="p-4 bg-foreground rounded-2xl"><QRCodeSVG value={WALLET_CONTRACT_ADDRESS} size={200} bgColor="#fafafa" fgColor="#0f0f14" level="H" /></div></div>
+          <div className="flex justify-center"><div className="p-4 bg-foreground rounded-2xl hover:scale-105 transition-transform duration-300"><QRCodeSVG value={WALLET_CONTRACT_ADDRESS} size={200} bgColor="#fafafa" fgColor="#0f0f14" level="H" /></div></div>
           <div className="flex items-center gap-2">
-            <code className="flex-1 text-xs md:text-sm bg-secondary p-3 rounded-lg truncate font-mono">{WALLET_CONTRACT_ADDRESS}</code>
-            <Button variant="secondary" size="icon" onClick={copyToClipboard}>{copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}</Button>
-            <Button variant="secondary" size="icon" asChild><a href={`${BASESCAN_URL}/address/${WALLET_CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a></Button>
+            <code className="flex-1 text-xs md:text-sm bg-secondary p-3 rounded-lg truncate font-mono hover:bg-secondary/80 transition-colors">{WALLET_CONTRACT_ADDRESS}</code>
+            <Button variant="secondary" size="icon" onClick={copyToClipboard} className="hover:bg-secondary/80 transition-colors">{copied ? <Check className="w-4 h-4 text-success animate-bounce" /> : <Copy className="w-4 h-4" />}</Button>
+            <Button variant="secondary" size="icon" asChild className="hover:bg-secondary/80 transition-colors"><a href={`${BASESCAN_URL}/address/${WALLET_CONTRACT_ADDRESS}`} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a></Button>
           </div>
         </div>
 
-        <div className="glass-card p-6 glow-effect animate-fade-in">
+        <div className="glass-card p-6 glow-effect animate-fade-in hover:shadow-2xl hover:bg-white/15 transition-all duration-300">
           <div className="flex items-center justify-between mb-2">
             <span className="text-muted-foreground text-sm">Balance</span>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRefreshBalance}>
-                <RefreshCw className="w-3 h-3" />
-              </Button>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="w-3 h-3" />
-                <span>Base Sepolia</span>
-              </div>
-            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 hover:bg-white/10 transition-colors" 
+              onClick={handleRefreshBalance}
+              disabled={isBalanceLoading}
+            >
+              <RefreshCw className={`w-3 h-3 ${isBalanceLoading ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
           <div className="text-4xl md:text-5xl font-bold eth-gradient">
-            {parseFloat(balance).toFixed(4)} <span className="text-2xl">ETH</span>
+            {isBalanceLoading ? (
+              <div className="animate-pulse bg-muted rounded h-12 w-32"></div>
+            ) : (
+              <>
+                {parseFloat(balance).toFixed(4)} <span className="text-2xl">ETH</span>
+              </>
+            )}
           </div>
+          {!isBalanceLoading && parseFloat(balance) > 0 && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              ≈ ${(parseFloat(balance) * 2500).toFixed(2)} USD
+            </div>
+          )}
         </div>
 
-        <div className="glass-card p-6 space-y-4 animate-fade-in">
-          <div className="flex items-center gap-2 text-sm"><Send className="w-4 h-4 text-primary" /><span className="font-medium">Send ETH</span><span className="text-muted-foreground ml-auto text-xs">0.5% fee supports the builder</span></div>
-          <Input placeholder="Recipient address (0x...)" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} className="font-mono text-sm" />
-          <Input type="number" step="0.0001" placeholder="Amount (ETH)" value={sendAmount} onChange={(e) => setSendAmount(e.target.value)} />
-          {sendAmount && parseFloat(sendAmount) > 0 && (
-            <div className="text-sm text-muted-foreground space-y-1 p-3 bg-secondary rounded-lg">
+        <div className="glass-card p-6 space-y-4 animate-fade-in hover:shadow-2xl hover:bg-white/15 transition-all duration-300">
+          <div className="flex items-center gap-2 text-sm">
+            <Send className="w-4 h-4 text-primary" />
+            <span className="font-medium">Send ETH</span>
+            <span className="text-muted-foreground ml-auto text-xs">0.5% fee supports the builder</span>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <Input 
+                placeholder="Recipient address (0x...)" 
+                value={recipientAddress} 
+                onChange={(e) => setRecipientAddress(e.target.value)} 
+                className={`font-mono text-sm ${recipientAddress && !isAddress(recipientAddress) ? 'border-destructive' : ''}`}
+              />
+              {recipientAddress && !isAddress(recipientAddress) && (
+                <p className="text-xs text-destructive mt-1">Invalid Ethereum address</p>
+              )}
+            </div>
+            
+            <div>
+              <Input 
+                type="number" 
+                step="0.0001" 
+                placeholder="Amount (ETH)" 
+                value={sendAmount} 
+                onChange={(e) => setSendAmount(e.target.value)} 
+                className={sendAmount && (parseFloat(sendAmount) <= 0 || parseFloat(sendAmount) > parseFloat(balance)) ? 'border-destructive' : ''}
+              />
+              {sendAmount && parseFloat(sendAmount) > parseFloat(balance) && (
+                <p className="text-xs text-destructive mt-1">Insufficient balance</p>
+              )}
+            </div>
+          </div>
+
+          {sendAmount && parseFloat(sendAmount) > 0 && parseFloat(sendAmount) <= parseFloat(balance) && (
+            <div className="text-sm text-muted-foreground space-y-1 p-3 bg-secondary rounded-lg animate-fade-in">
               <div className="flex justify-between"><span>Amount:</span><span>{sendAmount} ETH</span></div>
               <div className="flex justify-between text-warning"><span>Fee (0.5%):</span><span>-{feeAmount} ETH</span></div>
               <div className="flex justify-between font-medium text-foreground border-t border-border pt-1 mt-1"><span>Recipient receives:</span><span>{netAmount} ETH</span></div>
             </div>
           )}
+
           <Button 
-            className="w-full btn-glow" 
+            className={`w-full btn-glow ${isConfirmed ? 'bg-success hover:bg-success/90 animate-pulse' : ''}`} 
             size="lg" 
-            disabled={!isConnected || isPending || isConfirming || !recipientAddress || !sendAmount}
+            disabled={!isConnected || isPending || isConfirming || !recipientAddress || !sendAmount || !isAddress(recipientAddress) || parseFloat(sendAmount || '0') <= 0 || parseFloat(sendAmount || '0') > parseFloat(balance)}
             onClick={handleSendEth}
           >
             <Send className="w-4 h-4 mr-2" />
@@ -181,7 +230,56 @@ export function WalletDashboard() {
               ? 'Connect Wallet to Send' 
               : isPending || isConfirming 
                 ? 'Sending...' 
-                : 'Send ETH'}
+                : isConfirmed
+                  ? 'Sent Successfully! 🎉'
+                  : 'Send ETH'}
+          </Button>
+        </div>
+
+        <div className="glass-card p-6 space-y-4 animate-fade-in hover:shadow-2xl hover:bg-white/15 transition-all duration-300">
+          <div className="flex items-center gap-2 text-sm">
+            <History className="w-4 h-4 text-primary" />
+            <span className="font-medium">Recent Activity</span>
+            <span className="text-muted-foreground ml-auto text-xs">Last 24h</span>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
+                  <Send className="w-4 h-4 text-success" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">ETH Sent</p>
+                  <p className="text-xs text-muted-foreground">2 hours ago</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-destructive">-0.1 ETH</p>
+                <p className="text-xs text-muted-foreground">-$250.00</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">ETH Received</p>
+                  <p className="text-xs text-muted-foreground">5 hours ago</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-success">+0.5 ETH</p>
+                <p className="text-xs text-muted-foreground">+$1,250.00</p>
+              </div>
+            </div>
+          </div>
+          
+          <Button variant="outline" className="w-full" size="sm">
+            <History className="w-4 h-4 mr-2" />
+            View Full History
           </Button>
         </div>
 
