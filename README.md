@@ -10,7 +10,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 <div align="center">
-  <img src="./assets/wallet.png" alt="BaseWallet Logo" width="400"/>
+  <img src="./assets/wallet.png" alt="BaseWallet Logo" width="100%"/>
 </div>
 
 ## Description
