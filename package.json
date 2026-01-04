@@ -47,6 +47,7 @@
     "connectkit": "^1.9.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
+    "eventemitter3": "^5.0.1",
     "family": "^0.1.6",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",

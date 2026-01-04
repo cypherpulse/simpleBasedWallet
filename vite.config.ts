@@ -19,4 +19,22 @@ export default defineConfig(() => ({
     'process.env': {},
     global: 'globalThis',
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress wallet provider conflict warnings
+        if (
+          warning.message.includes('Cannot redefine property') ||
+          warning.message.includes('Circular dependency') ||
+          warning.message.includes('eventemitter3')
+        ) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
+  optimizeDeps: {
+    include: ['eventemitter3'], // Ensure eventemitter3 is properly bundled
+  },
 }));
